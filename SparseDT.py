@@ -68,9 +68,9 @@ def cost_func(A,U,gamma, alpha):
     return cost
 
 
-def main(X, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit = 0.1, momentum = 0.7, num_col = None):
+def main(n, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit = 0.1, momentum = 0.7, num_col = None):
     """
-    :param X: X is the signal vector
+    :param n: n is number of atoms
     :param Y: Y is the observations
     :param Ahat: Ahat is the starting point dictionary
     :param num_iteration: num_iteration is number of steps of SGD
@@ -82,7 +82,7 @@ def main(X, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
     :return Ahat: The trained dictionaries Ahat and Ahat_avg
     :return: The trained dictionaries Ahat and Ahat_avg
     """
-    n , K = X.shape # n is the number of atoms of the dictionary
+    m, K = Y.shape 
     m = Y.shape[0]
     if num_col == None:
         num_col = 2 * m * n # Number of cloumns of U
