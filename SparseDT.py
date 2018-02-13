@@ -110,8 +110,6 @@ def main(X, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
         G = momentum * G_new + (1-momentum) * G_old
         G_old = G
         Ahat2 = Ahat - step * G
-        # Ahat_avg is the moving avergae of A_hat trained over the course of optimization
-        Ahat_avg = Ahat_avg * it / (it + 1) + Ahat2 / (it + 1)
         cost_new = cost_func(Ahat2,U,gamma,alpha)
         # Line searching
         if cost_new <= cost_old:
@@ -120,6 +118,8 @@ def main(X, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
                 step /= 2
             Ahat = Ahat2
             cost_old = cost_new
+            # Ahat_avg is the moving avergae of A_hat trained over the course of optimization
+            Ahat_avg = Ahat_avg * (it - 1) / (it + 1) + 2 * Ahat / (it + 1)
         else:
             step /= 2.0
     return Ahat, Ahat_avg
