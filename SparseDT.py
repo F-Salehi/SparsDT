@@ -67,7 +67,7 @@ def cost_func(A,U,gamma, alpha):
     return cost
 
 
-def main(n, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit = 0.1, momentum = 0.7, num_col = None):
+def main(n, Y, Ahat, num_iteration, alpha, updateU = 1, randU = True, step_search = True, stepinit = 0.01, momentum = 0.7, num_col = None):
     """
     :param n: n is number of atoms
     :param Y: Y is the observations
@@ -76,6 +76,7 @@ def main(n, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
     :param alpha: alpha is the estimated alpha
     :param updateU: update U every updateU iterations
     :param randU: randU is a flag showing that U is generated randomly or based on their estimated alpha
+    :param step_search: step_search is a flag showing that the step size is tuned over course of the optimization or not
     :param stepinit: The initial stepsize of the SGD
     :param momentum: Momentum used for SGD
     :return Ahat: The trained dictionaries Ahat and Ahat_avg
@@ -109,16 +110,19 @@ def main(n, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
         G = momentum * G_new + (1-momentum) * G_old
         G_old = G
         Ahat2 = Ahat - step * G
-        cost_new = cost_func(Ahat2,U,gamma,alpha)
-        # Line searching
-        if cost_new <= cost_old:
-            step *= 1.1
-            if cost_new/cost_old < 0.75:
-                step /= 2
-            Ahat = Ahat2
-            cost_old = cost_new
-            # Ahat_avg is the moving avergae of A_hat trained over the course of optimization
-            Ahat_avg = Ahat_avg * (it - 1) / (it + 1) + 2 * Ahat / (it + 1)
+        if step_search:
+            cost_new = cost_func(Ahat2,U,gamma,alpha)
+            # Line searching
+            if cost_new <= cost_old:
+                step *= 1.1
+                if cost_new/cost_old < 0.75:
+                    step /= 2
+                Ahat = Ahat2
+                cost_old = cost_new
+            else:
+                step /= 2.0
         else:
-            step /= 2.0
+            Ahat = Ahat2
+        # Ahat_avg is the moving avergae of A_hat trained over the course of optimization
+        Ahat_avg = Ahat_avg * (it - 1) / (it + 1) + 2 * Ahat / (it + 1)
     return Ahat, Ahat_avg
