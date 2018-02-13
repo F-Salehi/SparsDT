@@ -95,7 +95,7 @@ def main(n, Y, Ahat, num_iteration, alpha, updateU = 1, randU = True, step_searc
         if it % updateU ==0:
             if randU:
                 """
-                Find U such that estimated alpha for U*Y is close to the estimated alpha
+                Find U such that their estimated alpha for U*Y is close to the given alpha of the dataset
                 """
                 U = findU(Y,m,num_col,alpha)
             else:
