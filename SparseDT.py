@@ -25,7 +25,6 @@ def gamma_hat2(alpha,U,Y):
     :return: gamma
     """
     p = 0.4
-    # beta = 0
     UT = N.transpose(U)
     h = abs(N.dot(UT,Y))**p
     EXP = N.mean(h,axis=1)
@@ -72,13 +71,13 @@ def main(n, Y, Ahat, num_iteration, alpha, updateU = 1 ,randU = True, stepinit =
     """
     :param n: n is number of atoms
     :param Y: Y is the observations
-    :param Ahat: Ahat is the starting point dictionary
+    :param Ahat: Ahat is the starting point fot training the dictionary
     :param num_iteration: num_iteration is number of steps of SGD
     :param alpha: alpha is the estimated alpha
     :param updateU: update U every updateU iterations
     :param randU: randU is a flag showing that U is generated randomly or based on their estimated alpha
     :param stepinit: The initial stepsize of the SGD
-    :param stepinit: Momentum used for SGD
+    :param momentum: Momentum used for SGD
     :return Ahat: The trained dictionaries Ahat and Ahat_avg
     :return: The trained dictionaries Ahat and Ahat_avg
     """
