@@ -2,8 +2,6 @@
 import numpy as np
 
 
-
-
 def estim_alpha(Y,num_samples):
     """
     We use the estimator in Reconstruction of Ultrasound RF Echoes Modeled as Stable Random Variables
@@ -11,10 +9,11 @@ def estim_alpha(Y,num_samples):
     :param num_samples: Number of Us used for estimating alpha
     :return: alpha_hat
     """
+    m = Y.shape[0]
     alphahat = 0
     count = 0
     while count <= num_samples:
-        U = np.random.normal(0,1,[np,1])
+        U = np.random.normal(0,1,[m,1])
         UT = np.transpose(U)
         sig = np.log(abs(np.dot(UT,Y)))
         k1 = np.mean(sig)
@@ -26,3 +25,4 @@ def estim_alpha(Y,num_samples):
             count += 1
     alpha = alphahat/count
     return alpha
+
