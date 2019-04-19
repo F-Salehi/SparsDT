@@ -1,13 +1,14 @@
 
 
-import autograd.numpy as N
-from  autograd import grad
+import torch
 import scipy.special as func
 import copy
 
 # Implementation of Dictionary Learning Based on Sparse Distribution Tomography
 
-
+class SparseDT:
+    def __init__(self):
+        
 # Compute the corrolation
 def calc_correct(Ahat,A):
     AT =N.transpose(A)
