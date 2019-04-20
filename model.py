@@ -16,21 +16,39 @@ class ModelSparseDT:
         A : torch.tensor (m_rows x n_cols)
             the initial dictionary
         """    
+        if not torch.cuda.is_available() and  device == 'cuda':
+            raise ValueError("cuda is not available")
+        if Y.type() != 'torch.FloatTensor':
+            raise TypeError("Y must be torch.FloatTensor")
+        if len(Y.size()) != 2:
+            raise ValueError("Y must be a matrix of dimention 2 with K observation")
         self.n_cols = n_cols
         self.m_rows = Y.size(0)
         self.K = Y.size(1)
-        if not torch.cuda.is_available() and  device == 'cuda':
-            raise ValueError("cuda is not available")
         self.device = device
         self.A = A if A is not None else torch.rand([self.m_rows,self.n_cols],dtype=torch.float32, requires_grad=True)
         self.A = self.A / self.A.data.norm(dim=0)
         self.A = self.self.A.to(self.device)
-        if Y.type() != 'torch.FloatTensor':
-            raise TypeError("Y must be torch.FloatTensor")
         self.Y = Y.to(self.device)
+        ?????? alpha
+        self.p = 0.4
+        self.c = (2**(p+1)) * func.gamma((p+1)/2.0) * func.gamma(-p/alpha) /(alpha*(N.pi**0.5) * func.gamma(-p/2.0) )
 
-    def _estimate_gamma(self, alpha, U, Y):
 
+    def _estimate_gamma(self, alpha, U):
+        """
+        estimating the dispersion gamma for the given U and Y
+        alpha: int
+            estimated alpha
+        U: torch.tensor
+            A random U
+        """
+        p = 0.4
+        UT = U.transpose(1,0)
+        h = UT.mm(Y).abs()**self.p
+        EXP = h.mean(dim=1)
+        gamma = (EXP/self.c)**(1/self.p)
+        return gamma
 
 
 
