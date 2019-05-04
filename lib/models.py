@@ -45,8 +45,13 @@ class ModelSparseDT:
         self.c = (2**(self.p+1)) * func.gamma((self.p+1)/2.0) * \
             func.gamma(-self.p/self.alpha) /(self.alpha*(np.pi**0.5) * func.gamma(-self.p/2.0) )
 
-    def set_optimizer(self, optim):
-        raise ValueError("Not Implemented yet")
+    def set_optimizer(self, optim, lr=0.1, ):
+        if optim == 'Adagrad':
+            self.optimizer = optim.Adagrad([self.A], lr=lr)
+        elif optim == 'SGD':
+            self.optimizer = optim.SGD([self.A], lr=lr)
+        else:
+            raise ValueError("Unknown optimizer")
 
     def estim_alpha(self, num_samples):
         """
