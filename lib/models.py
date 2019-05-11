@@ -153,12 +153,12 @@ class ModelSparseDT:
             loss = self.Loss(U, gamma)
             loss.backward()
             self.optimizer.step()
-
+            print(f'it : {it} | loss : {loss}', end = '\r')
             # Check that the optimization did not fail
             if torch.isnan(self.A).any():
                 raise ValueError('NaNs in coeffs! Stop optimization...')
-
-            return self.A.data
+        self.A = self.A / self.A.data.norm(dim=0)
+        return self.A.data
 
 
 
