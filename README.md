@@ -1,7 +1,7 @@
 
 # SparsDT
 
-SparsDT is a new statistical dictionary learning algorithm for sparse signals that is based on an $\alpha$-stable innovation model. The algorithm can be used to learn a sparse representation of the Signal. 
+SparsDT is a new statistical dictionary learning algorithm for sparse signals that is based on an lévy alpha-stable innovation model. The algorithm can be used to learn a sparse representation of the Signal. 
 The code can be run in both CPU and GPU.
 
 
