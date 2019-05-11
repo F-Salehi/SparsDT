@@ -24,6 +24,8 @@ class ModelSparseDT:
             number of samples in estimation of alpha
         batch : int
             minibatch of samples used in estimation of alpha
+        tol : float
+            tolerence of the optimization
         """    
         if not torch.cuda.is_available() and  device == 'cuda':
             raise ValueError("cuda is not available")
@@ -42,6 +44,7 @@ class ModelSparseDT:
         self.Y = Y.to(self.device)
         self.batch = batch
         self.alpha = alpha if alpha is not None else self._estim_alpha(num_samples)
+        self.tol = tol
         self.p = 0.4
         self.c = (2**(self.p+1)) * func.gamma((self.p+1)/2.0) * \
             func.gamma(-self.p/self.alpha) /(self.alpha*(np.pi**0.5) * func.gamma(-self.p/2.0) )
@@ -127,7 +130,7 @@ class ModelSparseDT:
     def _check_convergence(self):
         if torch.abs(self.A - self.A_prev).max() < self.tol:
             return True
-        self.coeffs_prev = self.coeffs.detach().clone()
+        self.A_prev = self.A.detach().clone()
         return False
 
     def Loss(self, U, gamma):
@@ -155,12 +158,12 @@ class ModelSparseDT:
 
         for it in range(int(max_iter)):
             U = self._findU(num_col) if rand_U else torch.randn([self.m_rows, num_col], device=self.device)
-            gamma = self._estimate_gamma(U)
-            
+            gamma = self._estimate_gamma(U)    
             self.optimizer.zero_grad()
             loss = self.Loss(U, gamma)
             loss.backward()
             self.optimizer.step()
+
             if verbose:
                 print(f'it : {it} | loss : {loss}', end = '\r')
             # Check that the optimization did not fail
@@ -170,8 +173,8 @@ class ModelSparseDT:
             if self._check_convergence():
                 print('Converged')
                 break
-        self.A = self.A / self.A.data.norm(dim=0)
-        return self.A.data
+
+        return self.A.data/ self.A.data.norm(dim=0)
 
 
 
