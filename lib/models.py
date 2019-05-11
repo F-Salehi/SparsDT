@@ -9,7 +9,8 @@ import copy
 # Implementation of Dictionary Learning Based on Sparse Distribution Tomography
 
 class ModelSparseDT:
-    def __init__(self, n_cols, Y, A=None, alpha=None, num_samples=1e5, batch=2000, device='cpu'):
+    def __init__(self, n_cols, Y, A=None, alpha=None, num_samples=1e5, batch=2000, device='cpu',
+                tol=1e-5):
         """
         n_cols : int
             Number of columns of the dictionary
@@ -123,12 +124,18 @@ class ModelSparseDT:
         norm = B.sum(dim=0)
         return norm
 
+    def _check_convergence(self):
+        if torch.abs(self.A - self.A_prev).max() < self.tol:
+            return True
+        self.coeffs_prev = self.coeffs.detach().clone()
+        return False
+
     def Loss(self, U, gamma):
         norm = self._norm_alpha(self.A, U)
         cost = ((norm-gamma**self.alpha) **2).mean()
         return cost
 
-    def fit(self, max_iter=1e4, rand_U=False, num_col = None):
+    def fit(self, max_iter=1e4, rand_U=False, num_col = None, verbose=True):
         '''
         Fitting the model
 
@@ -144,6 +151,7 @@ class ModelSparseDT:
 
         '''
         num_col = num_col if num_col else  2*self.m_rows*self.n_cols
+        self.A_prev = self.A.detach().clone()
 
         for it in range(int(max_iter)):
             U = self._findU(num_col) if rand_U else torch.randn([self.m_rows, num_col], device=self.device)
@@ -153,10 +161,15 @@ class ModelSparseDT:
             loss = self.Loss(U, gamma)
             loss.backward()
             self.optimizer.step()
-            print(f'it : {it} | loss : {loss}', end = '\r')
+            if verbose:
+                print(f'it : {it} | loss : {loss}', end = '\r')
             # Check that the optimization did not fail
             if torch.isnan(self.A).any():
                 raise ValueError('NaNs in coeffs! Stop optimization...')
+            # Check convergence
+            if self._check_convergence():
+                print('Converged')
+                break
         self.A = self.A / self.A.data.norm(dim=0)
         return self.A.data
 
