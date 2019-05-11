@@ -26,11 +26,11 @@ def Generate_A(m, n, max_correlation=0.8):
 	max_correlation : float
 		Maximum correlation between columns
 	'''
-	A = torch.randn([m, 1], dtype=torch.float64)
+	A = torch.randn([m, 1], dtype=torch.float32)
 	A /= A.norm()
 	counter = 1
 	while counter < n:
-	    Column = torch.randn([m, 1], dtype=torch.float64)
+	    Column = torch.randn([m, 1], dtype=torch.float32)
 	    Column /= Column.norm()
 	    cor = Column.transpose(1, 0).mm(A).abs().max()
 	    if cor < max_correlation:
@@ -44,7 +44,7 @@ def Generate_alpha_random(alpha, beta, shape=1):
     Generating random variables from an alpha-stable distribution.
     """   
     X = levy_stable.rvs(alpha, beta, size=shape)
-    return X
+    return torch.tensor(X, dtype=torch.float32)
 
 
 
