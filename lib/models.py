@@ -29,7 +29,7 @@ class ModelSparseDT:
         """    
         if not torch.cuda.is_available() and  device == 'cuda':
             raise ValueError("cuda is not available")
-        if Y.type() != 'torch.FloatTensor':
+        if not isinstance(Y, torch.FloatTensor):
             raise TypeError("Y must be torch.FloatTensor")
         if len(Y.size()) != 2:
             raise ValueError("Y must be a matrix of dimention 2 with K observation")
